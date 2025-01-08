@@ -163,8 +163,8 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         dump(SERVER)
  
     # funny
-    if m[0].lower().startswith('is the admin allowed to'):
-        await message.channel.send(f'yes, of course they can {m[0][24:]}')
+    if " ".join(m).lower().startswith('is the admin allowed to'):
+        await message.channel.send(f'yes, of course they can {" ".join(m)[24:]}')
 
     # actual counting stuff
     number = None
