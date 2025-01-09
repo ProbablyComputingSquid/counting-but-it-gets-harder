@@ -153,13 +153,6 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         if m[0] == ('$setchannel'):
             await message.channel.send(f'counting channel set to: <#{message.channel.id}>')
             count_info[SERVER]["channel"] = int(message.channel.id)
-        #if m[0] ==('$addadmin'):
-        #    username = m[1]
-        #    if not username in count_info[SERVER]["admins"]:
-        #        count_info[SERVER]["admins"].append(username)
-        #        await message.channel.send(f'set {username} as admin')
-        #    else:
-        #        await message.channel.send(f'{username} is already an admin')
         dump(SERVER)
  
     # funny

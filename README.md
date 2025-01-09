@@ -8,6 +8,25 @@ One of my friends said, "hey what if it was counting but every time someone fail
 So then, I set out to do this. <br>
 
 ### Running it yourself?
-- Grab a token from the discord bot portal, and place it in .env.example, and rename it to .env
+- Grab your bot token from the discord bot portal, and place it in .env.example, and rename it to .env
 - make sure to install all dependencies
 - on the discord bot page, select "read messages" in the intents section
+- git clone the repository and run `python3 bot.py` as the bot should create all data storage files needed while running
+- you're set to go now!
+<h2>📂 Project Contents: </h2>
+
+```
+/data
+    _servers.json - mapping of server data
+    {server_id}.json - seperate json file for each server "guild's" data
+    ...
+.env - where your bot token should go
+.gitignore
+boy.py - actual bot code
+example.json - what a {server_id}.json should look like
+LICENSE 
+README.md
+```
+
+# If you're from hack club
+Please consider voting!
