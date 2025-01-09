@@ -106,10 +106,10 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         leaderboard = {key: value for key, 
                value in sorted(leaderboard.items(),key=lambda item: item[1], reverse=True)}
            
-        joined = "---REAL---\n"
+        joined = ""
         for user, count in leaderboard.items():
             joined += f'{user}:{count}\n'
-        joined += "---END REAL---\n"
+        #joined += "---END REAL---\n"
         await message.channel.send(joined)
     ##############
     # USER STUFF #
