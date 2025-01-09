@@ -88,6 +88,7 @@ By the way, you can't count twice in a row. And try not to fail, because failing
 \- $count or $currentcount: outputs current count info
 \- $user: use this to find out stats of a user (defaults to current user) e.g. `$user computingsquid`
 \- $slowmode: find out the slowmode of a user (defaults to current user) e.g. `$slowmode computingsquid`
+\= $leaderboard: output the current server's leaderboard
 ### Admin-only commands:
 \- $setchannel: sets current channel to counting channel
 
@@ -102,9 +103,13 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         leaderboard = {}
         for user in count_info[SERVER]["userdata"]:
             leaderboard[str(user)] = count_info[SERVER]["userdata"][user]["counts"] 
-        joined = ""
+        leaderboard = {key: value for key, 
+               value in sorted(leaderboard.items(),key=lambda item: item[1], reverse=True)}
+           
+        joined = "---REAL---\n"
         for user, count in leaderboard.items():
             joined += f'{user}:{count}\n'
+        joined += "---END REAL---\n"
         await message.channel.send(joined)
     ##############
     # USER STUFF #
@@ -177,7 +182,8 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         # register user
         if not author in count_info[SERVER]["userdata"].keys():
             count_info[SERVER]["userdata"][author] = {"counts": 0, "slowmode": 1, "failed": 0}
-        
+            # send DM to person with rules
+            await message.author.send("Welcome to super hardcore counting! The rules are simple.\n1. Count by one.\n2.You cannot count twice in a row\n3.Every time you break rule 1 or 2, your slowmode doubles, starting at 1s.\nglhf\n-# stuck? try $help")
         # check for slowmode
         now = datetime.now()
 
