@@ -4,16 +4,11 @@ import discord
 import json
 from datetime import datetime, timedelta
 import time
-from discord.ext import commands, tasks
-import asyncio
-from discord_slash import SlashCommand, cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option, create_choice
-
 
 from dotenv import load_dotenv
 import os
  
-slash = SlashCommand(client, sync_commands=True, sync_on_cog_reload=True)
+
 # Load environment variables from the .env file
 load_dotenv()
 server_info = {}
@@ -47,12 +42,8 @@ intents.message_content = True
 activity = discord.Activity(name='all the counting addicts', type=discord.ActivityType.watching)
 client = discord.Client(intents=intents, activity=activity)
 
-@slash.slash(name="Ping!",
-             description="Pong!",)
 
-async def test(ctx):
-  await ctx.send(content="Pong!")
-  
+
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
