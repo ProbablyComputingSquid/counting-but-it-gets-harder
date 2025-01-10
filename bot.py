@@ -99,8 +99,9 @@ By the way, you can't count twice in a row. And try not to fail, because failing
 \- $leaderboard <id>: output the current server's (or server id passed, if valid) leaderboard
 ### Admin-only commands:
 \- $setchannel: sets current channel to counting channel
-\- $slowmode set <user>: sets slowmode (in seconds) of a user. 
-
+\- $slowmode set <user>: sets slowmode (in seconds) of a user. [DEPRECATED]
+Made with blood, sweat, and tears by @computingsquid, bot profile by @elaborate.eggnog
+Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets-harder>
         """)
     # high score
     if m[0] ==('$highscore'):
@@ -144,7 +145,7 @@ By the way, you can't count twice in a row. And try not to fail, because failing
     if m[0] ==('$slowmode'):
         if len(m) > 1 and m[1] == "set":
             user = m[2]
-            if message.author.guild_permissions.administrator or author == "computingsquid":
+            if author == "computingsquid":
                 try:
                     count_info[SERVER]["userdata"][user]["slowmode"] = int(m[3])
                     await message.channel.send(f'Successfully set {user}\'s slowmode to {m[3]}s')
@@ -197,7 +198,7 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         if not author in count_info[SERVER]["userdata"].keys():
             count_info[SERVER]["userdata"][author] = {"counts": 0, "slowmode": 1, "failed": 0}
             # send DM to person with rules
-            await message.author.send("Welcome to super hardcore counting! The rules are simple.\n1. Count by one.\n2.You cannot count twice in a row\n3.Every time you break rule 1 or 2, your slowmode doubles, starting at 1s.\nglhf\n-# stuck? try $help")
+            await message.author.send("Welcome to super hardcore counting! The rules are simple.\n1. Count by one.\n2.You cannot count twice in a row\n3.Every time you break rule 1 or 2, your slowmode doubles, starting at 1s.\n stuck? try $help")
         # check for slowmode
         now = datetime.now()
 
