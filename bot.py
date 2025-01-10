@@ -143,7 +143,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         await message.channel.send(f'fetching user stats for {user}')
         try:
             user_stats = count_info[SERVER]["userdata"][user]
-            await message.channel.send(f'---**{user}**---Total counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {user_stats["slowmode"]}s')
+            await message.channel.send(f'---**{user}**---\nTotal counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {user_stats["slowmode"]}s')
         except KeyError:
             await message.channel.send(f'ERROR: User {user} not registered')
 
