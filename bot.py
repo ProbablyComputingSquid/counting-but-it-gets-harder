@@ -61,8 +61,9 @@ async def wrong(author, message, reason=None):
     await message.add_reaction("❌")
     count_info[SERVER]["current"] = 0
     count_info[SERVER]["last user"] = ""
-    count_info["userdata"][author]["failed"] += 1
-    count_info["userdata"]["slowmode"] *= 2
+    count_info[SERVER]["userdata"][author]["failed"] += 1
+    count_info[SERVER]["userdata"][author]["slowmode"] *= 2
+    dump(SERVER)
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -86,11 +87,12 @@ By the way, you can't count twice in a row. And try not to fail, because failing
 \- $ping: pings the bot
 \- $highscore: outputs current highscore
 \- $count or $currentcount: outputs current count info
-\- $user: use this to find out stats of a user (defaults to current user) e.g. `$user computingsquid`
-\- $slowmode: find out the slowmode of a user (defaults to current user) e.g. `$slowmode computingsquid`
-\= $leaderboard: output the current server's leaderboard
+\- $user <user>: use this to find out stats of a user (defaults to current user) e.g. `$user computingsquid`
+\- $slowmode <user>: find out the slowmode of a user (defaults to current user) e.g. `$slowmode computingsquid`
+\- $leaderboard <id>: output the current server's (or server id passed, if valid) leaderboard
 ### Admin-only commands:
 \- $setchannel: sets current channel to counting channel
+\- $slowmode set <user>: sets slowmode (in seconds) of a user. 
 
         """)
     # high score
@@ -100,6 +102,8 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         await message.channel.send(f'The current count is {count_info[SERVER]["current"]}, counted by {count_info[SERVER]["last user"]}')
     if m[0] == '$leaderboard':
         await message.channel.send(f'Server leaderboard:')
+        if m[1] in count_info:
+            SERVER = m[1]
         leaderboard = {}
         for user in count_info[SERVER]["userdata"]:
             leaderboard[str(user)] = count_info[SERVER]["userdata"][user]["counts"] 
