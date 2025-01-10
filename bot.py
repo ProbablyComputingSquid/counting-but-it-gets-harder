@@ -193,7 +193,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         #print(f'evaluated {number}')
     except:
         try:
-            number = int(eval(m[0]))
+            number = ne.evaluate(m[0])
             print(f'falling back to evaluating first block, {number}')
         except: pass
         pass
