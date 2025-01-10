@@ -102,8 +102,9 @@ By the way, you can't count twice in a row. And try not to fail, because failing
         await message.channel.send(f'The current count is {count_info[SERVER]["current"]}, counted by {count_info[SERVER]["last user"]}')
     if m[0] == '$leaderboard':
         await message.channel.send(f'Server leaderboard:')
-        if m[1] in count_info:
-            SERVER = m[1]
+        if len(m) > 1:
+            if m[1] in count_info:
+                SERVER = m[1]
         leaderboard = {}
         for user in count_info[SERVER]["userdata"]:
             leaderboard[str(user)] = count_info[SERVER]["userdata"][user]["counts"] 
