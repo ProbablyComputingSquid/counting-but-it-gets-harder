@@ -1,3 +1,5 @@
+# TODO: make joining a server not break the bot, handle missing data files better
+
 import discord
 import json
 from datetime import datetime, timedelta
@@ -8,10 +10,15 @@ import os
  
 # Load environment variables from the .env file
 load_dotenv()
-
-f = open("data/_servers.json", "r")
-server_info = json.loads(f.read())
-f.close()
+server_info = {}
+try:
+    f = open("data/_servers.json", "r")
+    server_info = json.loads(f.read())
+    f.close()
+except:
+    f = open("data/_servers.json", "w")
+    f.write("{}")
+    
 count_info = {}
 for id in server_info.values():
     file = open(f'data/{id}.json', "r")
@@ -112,8 +119,10 @@ By the way, you can't count twice in a row. And try not to fail, because failing
                value in sorted(leaderboard.items(),key=lambda item: item[1], reverse=True)}
            
         joined = ""
+        i = 0
         for user, count in leaderboard.items():
-            joined += f'{user}:{count}\n'
+            i+=1
+            joined += f'{i}. {user}:{count}\n'
         #joined += "---END REAL---\n"
         await message.channel.send(joined)
     ##############
