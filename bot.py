@@ -4,6 +4,7 @@ import discord
 import json
 from datetime import datetime, timedelta
 import time
+import numexpr as ne
 
 from dotenv import load_dotenv
 import os
@@ -188,7 +189,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
     number = None
     try:
         #print(eval(''.join(m)))
-        number = int(eval(''.join(m)))
+        number = ne.evaluate(''.join(m))
         #print(f'evaluated {number}')
     except:
         try:
