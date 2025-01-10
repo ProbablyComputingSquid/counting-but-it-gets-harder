@@ -189,11 +189,11 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
     number = None
     try:
         #print(eval(''.join(m)))
-        number = ne.evaluate(''.join(m))
+        number = int(ne.evaluate(''.join(m)))
         #print(f'evaluated {number}')
     except:
         try:
-            number = ne.evaluate(m[0])
+            number = int(ne.evaluate(m[0]))
             print(f'falling back to evaluating first block, {number}')
         except: pass
         pass
