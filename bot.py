@@ -4,10 +4,16 @@ import discord
 import json
 from datetime import datetime, timedelta
 import time
+from discord.ext import commands, tasks
+import asyncio
+from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice
+
 
 from dotenv import load_dotenv
 import os
  
+slash = SlashCommand(client, sync_commands=True, sync_on_cog_reload=True)
 # Load environment variables from the .env file
 load_dotenv()
 server_info = {}
@@ -41,6 +47,12 @@ intents.message_content = True
 activity = discord.Activity(name='all the counting addicts', type=discord.ActivityType.watching)
 client = discord.Client(intents=intents, activity=activity)
 
+@slash.slash(name="Ping!",
+             description="Pong!",)
+
+async def test(ctx):
+  await ctx.send(content="Pong!")
+  
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
@@ -83,6 +95,8 @@ async def on_message(message):
         await message.channel.send(message.guild.id)
     if m[0] == ('$ping'):
         await message.channel.send('Pong!')
+    if m[0] == ('$invite'):
+        await message.channel.send('https://discord.com/oauth2/authorize?&client_id=1326208864814633093&scope=bot+applications.commands&permissions=8')
     # help command
     if m[0] == ('$help'):
         await message.channel.send("""
@@ -138,7 +152,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         await message.channel.send(f'fetching user stats for {user}')
         try:
             user_stats = count_info[SERVER]["userdata"][user]
-            await message.channel.send(f'Data: \nTotal counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {user_stats["slowmode"]}s')
+            await message.channel.send(f'---**{user}**---Total counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {user_stats["slowmode"]}s')
         except KeyError:
             await message.channel.send(f'ERROR: User {user} not registered')
 
