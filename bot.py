@@ -82,15 +82,88 @@ async def on_message(message):
     SERVER = str(message.guild.id)
     m = message.content.split(" ")
     author = str(message.author)
+
+    # actual counting stuff
+    number = None
+    try:
+        #print(eval(''.join(m)))
+        number = int(ne.evaluate(''.join(m)))
+        #print(f'evaluated {number}')
+    except:
+        try:
+            number = int(ne.evaluate(m[0]))
+            #print(f'falling back to evaluating first block, {number}')
+        except: pass
+        pass
+    if int(message.channel.id) == count_info[SERVER]["channel"] and isinstance(number, int):
+        # set number
+        #number = eval(m[0])
+        # register user
+        if not author in count_info[SERVER]["userdata"].keys():
+            count_info[SERVER]["userdata"][author] = {"counts": 0, "slowmode": 1, "failed": 0}
+            # send DM to person with rules
+            await message.author.send("Welcome to super hardcore counting! The rules are simple.\n1. Count by one.\n2.You cannot count twice in a row\n3.Every time you break rule 1 or 2, your slowmode doubles, starting at 1s.\n stuck? try $help")
+        # check for slowmode
+        now = datetime.now()
+
+        # user is under cooldown
+        if author in user_cooldowns and not author == "computingsquid":
+            last_message_time = user_cooldowns[author]
+            cooldown_end = last_message_time + timedelta(seconds=count_info[SERVER]["userdata"][author]["slowmode"])
+            if now < cooldown_end:
+                # Message sent too soon, delete it
+                await message.delete()
+                try:
+                    unix_sec = time.mktime(cooldown_end.timetuple())
+                    await message.channel.send(f"Hey {message.author.name}! You're still under slowmode! you have <t:{str(int(unix_sec))}:R> left",delete_after=4)
+                    #print(f"Message sent to {message.author.name}!")
+                except discord.Forbidden:
+                    print(f"Could not send a DM to {message.author.name}. They might have DMs disabled.")
+                return
+
+        # Update the user's last message time
+        user_cooldowns[author] = now
+    
+
+        if count_info[SERVER]["last user"] == author and count_info[SERVER]["last user"] != "computingsquid":
+            print(f'last user counted: {count_info[SERVER]["last user"]} user counted: {author}')
+            await wrong(author, message, "You can't count twice in a row!")
+        elif number == count_info[SERVER]["current"] + 1:
+            #if count_info[SERVER]["last user"] == "computingsquid": await message.channel.send('admin is allowed to count consecutively')
+            count_info[SERVER]["current"] += 1
+            count_info[SERVER]["userdata"][author]["counts"] += 1
+            count_info[SERVER]["last user"] = author
+            if count_info[SERVER]["high score"] < count_info[SERVER]["current"]:
+                count_info[SERVER]["high score"] = count_info[SERVER]["current"]
+                count_info[SERVER]["highest counter"] = count_info[SERVER]["last user"]
+            await message.add_reaction("✅")
+            if number == 69:
+                await message.add_reaction("🇳")
+                await message.add_reaction("🇮")
+                await message.add_reaction("🇨")
+                await message.add_reaction("🇪")
+        elif count_info[SERVER]["current"] == 0:
+            await message.add_reaction("⚠️")
+            await message.channel.send('the counting starts at 1!')
+        else:
+            await wrong(author, message)
+        dump(SERVER)
+    ############
+    # Commands #
+    ############
+    if m[0] == ('$eval'):
+        num = int(ne.evaluate(''.join(m[1:])))
+        await message.channel.send(f'`{m[1:]} = {num}`')
+        
     # test commands
     if m[0] == ('$guildid'):
         await message.channel.send(message.guild.id)
-    if m[0] == ('$ping'):
+    elif m[0] == ('$ping'):
         await message.channel.send('Pong!')
-    if m[0] == ('$invite'):
+    elif m[0] == ('$invite'):
         await message.channel.send('https://discord.com/oauth2/authorize?&client_id=1326208864814633093&scope=bot+applications.commands&permissions=8')
     # help command
-    if m[0] == ('$help'):
+    elif m[0] == ('$help'):
         await message.channel.send("""
 # Don't know how to count? 
 It's simple. Simply start at 1, and increase like this:
@@ -110,11 +183,11 @@ Made with blood, sweat, and tears by @computingsquid, bot profile by @elaborate.
 Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets-harder>
         """)
     # high score
-    if m[0] ==('$highscore'):
+    elif m[0] ==('$highscore'):
         await message.channel.send(f'Server high score is: {count_info[SERVER]["high score"]}, counted by {count_info[SERVER]["highest counter"]}')
-    if m[0] ==('$currentcount') or m[0] ==('$count'):
+    elif m[0] ==('$currentcount') or m[0] ==('$count'):
         await message.channel.send(f'The current count is {count_info[SERVER]["current"]}, counted by {count_info[SERVER]["last user"]}')
-    if m[0] == '$leaderboard':
+    elif m[0] == '$leaderboard':
         await message.channel.send(f'Server leaderboard:')
         if len(m) > 1:
             if m[1] in count_info:
@@ -136,7 +209,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
     # USER STUFF #
     ##############
 
-    if m[0] ==('$user'):
+    elif m[0] ==('$user'):
         user = ""
         if len(m) == 1: user = author
         else: user = m[1]
@@ -148,7 +221,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         except KeyError:
             await message.channel.send(f'ERROR: User {user} not registered')
 
-    if m[0] ==('$slowmode'):
+    elif m[0] ==('$slowmode'):
         if len(m) > 1 and m[1] == "set":
             user = m[2]
             if author == "computingsquid":
@@ -185,71 +258,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
     if " ".join(m).lower().startswith('is the admin allowed to'):
         await message.channel.send(f'yes, of course they can {" ".join(m)[24:]}')
 
-    # actual counting stuff
-    number = None
-    try:
-        #print(eval(''.join(m)))
-        number = int(ne.evaluate(''.join(m)))
-        #print(f'evaluated {number}')
-    except:
-        try:
-            number = int(ne.evaluate(m[0]))
-            print(f'falling back to evaluating first block, {number}')
-        except: pass
-        pass
-    if int(message.channel.id) == count_info[SERVER]["channel"] and isinstance(number, int):
-        # set number
-        #number = eval(m[0])
-        # register user
-        if not author in count_info[SERVER]["userdata"].keys():
-            count_info[SERVER]["userdata"][author] = {"counts": 0, "slowmode": 1, "failed": 0}
-            # send DM to person with rules
-            await message.author.send("Welcome to super hardcore counting! The rules are simple.\n1. Count by one.\n2.You cannot count twice in a row\n3.Every time you break rule 1 or 2, your slowmode doubles, starting at 1s.\n stuck? try $help")
-        # check for slowmode
-        now = datetime.now()
-
-        # user is under cooldown
-        if author in user_cooldowns and not author == "computingsquid":
-            last_message_time = user_cooldowns[author]
-            cooldown_end = last_message_time + timedelta(seconds=count_info[SERVER]["userdata"][author]["slowmode"])
-            if now < cooldown_end:
-                # Message sent too soon, delete it
-                await message.delete()
-                try:
-                    unix_sec = time.mktime(cooldown_end.timetuple())
-                    await message.author.send("Hey! You're still under slowmode! you have <t:" + str(int(unix_sec)) + ":R> left")
-                    #print(f"Message sent to {message.author.name}!")
-                except discord.Forbidden:
-                    print(f"Could not send a DM to {message.author.name}. They might have DMs disabled.")
-                return
-
-        # Update the user's last message time
-        user_cooldowns[author] = now
     
-
-        if count_info[SERVER]["last user"] == author and count_info[SERVER]["last user"] != "computingsquid":
-            print(f'last user counted: {count_info[SERVER]["last user"]} user counted: {author}')
-            await wrong(author, message, "You can't count twice in a row!")
-        elif number == count_info[SERVER]["current"] + 1:
-            #if count_info[SERVER]["last user"] == "computingsquid": await message.channel.send('admin is allowed to count consecutively')
-            count_info[SERVER]["current"] += 1
-            count_info[SERVER]["userdata"][author]["counts"] += 1
-            count_info[SERVER]["last user"] = author
-            if count_info[SERVER]["high score"] < count_info[SERVER]["current"]:
-                count_info[SERVER]["high score"] = count_info[SERVER]["current"]
-                count_info[SERVER]["highest counter"] = count_info[SERVER]["last user"]
-            await message.add_reaction("✅")
-            if number == 69:
-                await message.add_reaction("🇳")
-                await message.add_reaction("🇮")
-                await message.add_reaction("🇨")
-                await message.add_reaction("🇪")
-        elif count_info[SERVER]["current"] == 0:
-            await message.add_reaction("⚠️")
-            await message.channel.send('the counting starts at 1!')
-        else:
-            await wrong(author, message)
-        dump(SERVER)
 
 
 client.run(os.getenv('TOKEN'))
