@@ -118,12 +118,12 @@ async def on_message(message):
                 await message.delete()
                 try:
                     unix_sec = time.mktime(cooldown_end.timetuple())
-                    await message.channel.send(f"Hey {message.author.name}! You're still under slowmode! you have <t:{str(int(unix_sec))}:R> left",delete_after=4)
+                    await message.channel.send(f"Hey {message.author.name}! You're still under slowmode! Slowmode expires <t:{str(int(unix_sec))}:R>",delete_after=slowmode)
                     #print(f"Message sent to {message.author.name}!")
                 except discord.Forbidden:
                     print(f"Could not send a DM to {message.author.name}. They might have DMs disabled.")
                 return
-
+        
         # Update the user's last message time
         user_cooldowns[author] = now
     
