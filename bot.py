@@ -104,12 +104,15 @@ async def on_message(message):
             # send DM to person with rules
             await message.author.send("Welcome to super hardcore counting! The rules are simple.\n1. Count by one.\n2.You cannot count twice in a row\n3.Every time you break rule 1 or 2, your slowmode doubles, starting at 1s.\n stuck? try $help")
         # check for slowmode
+        # slowmode calc
+        stats = count_info[SERVER]["userdata"][author]
+        slowmode = stats["slowmode"] * (0.9 ** (stats["counts"] // 50))
         now = datetime.now()
 
         # user is under cooldown
-        if author in user_cooldowns and not author == "computingsquid":
-            last_message_time = user_cooldowns[author]
-            cooldown_end = last_message_time + timedelta(seconds=count_info[SERVER]["userdata"][author]["slowmode"])
+        if author in user_cooldowns and not author == "computingsquids":
+            #last_message_time = user_cooldowns[author]
+            cooldown_end = user_cooldowns[author] + timedelta(seconds=slowmode)
             if now < cooldown_end:
                 # Message sent too soon, delete it
                 await message.delete()
@@ -129,19 +132,21 @@ async def on_message(message):
             print(f'last user counted: {count_info[SERVER]["last user"]} user counted: {author}')
             await wrong(author, message, "You can't count twice in a row!")
         elif number == count_info[SERVER]["current"] + 1:
-            #if count_info[SERVER]["last user"] == "computingsquid": await message.channel.send('admin is allowed to count consecutively')
+            await message.add_reaction("✅")
             count_info[SERVER]["current"] += 1
             count_info[SERVER]["userdata"][author]["counts"] += 1
             count_info[SERVER]["last user"] = author
             if count_info[SERVER]["high score"] < count_info[SERVER]["current"]:
                 count_info[SERVER]["high score"] = count_info[SERVER]["current"]
                 count_info[SERVER]["highest counter"] = count_info[SERVER]["last user"]
-            await message.add_reaction("✅")
+                await message.add_reaction("🏆")
             if number == 69:
                 await message.add_reaction("🇳")
                 await message.add_reaction("🇮")
                 await message.add_reaction("🇨")
                 await message.add_reaction("🇪")
+            elif number == 100:
+                await message.add_reaction("💯")
         elif count_info[SERVER]["current"] == 0:
             await message.add_reaction("⚠️")
             await message.channel.send('the counting starts at 1!')
@@ -186,7 +191,10 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
     elif m[0] ==('$highscore'):
         await message.channel.send(f'Server high score is: {count_info[SERVER]["high score"]}, counted by {count_info[SERVER]["highest counter"]}')
     elif m[0] ==('$currentcount') or m[0] ==('$count'):
-        await message.channel.send(f'The current count is {count_info[SERVER]["current"]}, counted by {count_info[SERVER]["last user"]}')
+        if count_info[SERVER]["current"] == 0:
+            await message.channel.send('Nobody has counted yet!')
+        else:
+            await message.channel.send(f'The most recent count was {count_info[SERVER]["current"]}, counted by {count_info[SERVER]["last user"]}')
     elif m[0] == '$leaderboard':
         await message.channel.send(f'Server leaderboard:')
         if len(m) > 1:
@@ -244,7 +252,9 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
                 user = m[1]
             try:
                 user_stats = count_info[SERVER]["userdata"][user]
-                await message.channel.send(f'Current slowmode for {user} is: {user_stats["slowmode"]}s')
+                slowmode = user_stats["slowmode"] * (0.9 ** (user_stats["counts"] // 50))
+                #print(f'Slowmode:{slowmode}')
+                await message.channel.send(f'Current slowmode for {user} is: {slowmode}s')
             except KeyError:
                 await message.channel.send(f'ERROR: User {user} not registered')
     # admin commands
