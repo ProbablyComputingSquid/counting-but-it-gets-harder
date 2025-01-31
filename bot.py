@@ -111,7 +111,6 @@ async def on_message(message):
 
         # user is under cooldown
         if author in user_cooldowns and not author == "computingsquids":
-            #last_message_time = user_cooldowns[author]
             cooldown_end = user_cooldowns[author] + timedelta(seconds=slowmode)
             if now < cooldown_end:
                 # Message sent too soon, delete it
@@ -123,7 +122,7 @@ async def on_message(message):
                 except discord.Forbidden:
                     print(f"Could not send a DM to {message.author.name}. They might have DMs disabled.")
                 return
-        
+
         # Update the user's last message time
         user_cooldowns[author] = now
     
@@ -225,7 +224,8 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         await message.channel.send(f'fetching user stats for {user}')
         try:
             user_stats = count_info[SERVER]["userdata"][user]
-            await message.channel.send(f'---**{user}**---\nTotal counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {user_stats["slowmode"]}s')
+            slowmode = user_stats["slowmode"] * (0.9 ** (user_stats["counts"] // 50))
+            await message.channel.send(f'---**{user}**---\nTotal counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {slowmode}s')
         except KeyError:
             await message.channel.send(f'ERROR: User {user} not registered')
 
