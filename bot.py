@@ -106,7 +106,7 @@ async def on_message(message):
         # check for slowmode
         # slowmode calc
         stats = count_info[SERVER]["userdata"][author]
-        slowmode = stats["slowmode"] * (0.9 ** (stats["counts"] // 50))
+        slowmode = int(stats["slowmode"] * (0.9 ** (stats["counts"] // 50)))
         now = datetime.now()
 
         # user is under cooldown
@@ -224,7 +224,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         await message.channel.send(f'fetching user stats for {user}')
         try:
             user_stats = count_info[SERVER]["userdata"][user]
-            slowmode = user_stats["slowmode"] * (0.9 ** (user_stats["counts"] // 50))
+            slowmode = int(user_stats["slowmode"] * (0.9 ** (user_stats["counts"] // 50)))
             await message.channel.send(f'---**{user}**---\nTotal counts: {user_stats["counts"]} \nFailed counts: {user_stats["failed"]}\nSlowmode: {slowmode}s')
         except KeyError:
             await message.channel.send(f'ERROR: User {user} not registered')
@@ -252,7 +252,7 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
                 user = m[1]
             try:
                 user_stats = count_info[SERVER]["userdata"][user]
-                slowmode = user_stats["slowmode"] * (0.9 ** (user_stats["counts"] // 50))
+                slowmode = int(user_stats["slowmode"] * (0.9 ** (user_stats["counts"] // 50)))
                 #print(f'Slowmode:{slowmode}')
                 await message.channel.send(f'Current slowmode for {user} is: {slowmode}s')
             except KeyError:
