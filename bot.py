@@ -190,7 +190,18 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
     elif m[0] ==('$highscore'):
         await message.channel.send(f'Server high score is: {count_info[SERVER]["high score"]}, counted by {count_info[SERVER]["highest counter"]}')
     elif m[0] ==('$currentcount') or m[0] ==('$count'):
-        if count_info[SERVER]["current"] == 0:
+        if len(m) > 1 and m[1] == ('set'):
+            if message.author.guild_permissions.administrator:
+                try:
+                    num = int(m[2])
+                    count_info[SERVER]["current"] = num
+                    dump(SERVER)
+                    await message.channel.send(f"Just set count to {num}!")
+                except:
+                    await message.channel.send("ERROR: That's not a number!")
+            else: 
+                await message.channel.send(f"<@{message.author.id}> Lacking proper permissions!")
+        elif count_info[SERVER]["current"] == 0:
             await message.channel.send('Nobody has counted yet!')
         else:
             await message.channel.send(f'The most recent count was {count_info[SERVER]["current"]}, counted by {count_info[SERVER]["last user"]}')
@@ -262,12 +273,12 @@ Open-sourced at: <https://github.com/ProbablyComputingSquid/counting-but-it-gets
         if m[0] == ('$setchannel'):
             await message.channel.send(f'counting channel set to: <#{message.channel.id}>')
             count_info[SERVER]["channel"] = int(message.channel.id)
-        dump(SERVER)
+        #dump(SERVER)
  
     # funny
     if " ".join(m).lower().startswith('is the admin allowed to'):
         await message.channel.send(f'yes, of course they can {" ".join(m)[24:]}')
-
+    dump(SERVER)
     
 
 
